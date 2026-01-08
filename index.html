@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Poop Tracker 💩</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Palette: Harmonious Purples */
+            --bg-page: #F3E8FF;       /* Light Lavender */
+            --bg-card: #FFFFFF;
+            --primary: #9333EA;       /* Purple 600 */
+            --primary-soft: #D8B4FE;  /* Purple 300 */
+            --accent-brown: #78350F;  /* Poop Brown */
+            --text-dark: #4C1D95;
+            --text-gray: #6B7280;
+        }
+
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-dark);
+            font-family: 'Nunito', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-family: 'Fredoka', sans-serif; /* Playful font */
+            font-size: 2rem;
+            margin: 10px 0 30px 0;
+            color: var(--primary);
+            text-shadow: 2px 2px 0px #E9D5FF;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .container { width: 100%; max-width: 400px; }
+
+        /* --- Cards --- */
+        .card {
+            background: var(--bg-card);
+            border-radius: 35px;
+            padding: 30px 20px;
+            box-shadow: 0 15px 35px -5px rgba(147, 51, 234, 0.15);
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            border: 4px solid #fff;
+        }
+
+        /* --- Timer Section --- */
+        .mascot {
+            font-size: 5rem;
+            display: block;
+            margin: 10px auto;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .mascot.breathing {
+            animation: breathe 2s infinite ease-in-out;
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15) rotate(5deg); }
+        }
+
+        .timer-display {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 3.5rem;
+            color: var(--text-dark);
+            margin: 10px 0 20px 0;
+        }
+
+        .btn {
+            border: none;
+            padding: 18px 0;
+            width: 100%;
+            border-radius: 50px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.1s;
+            box-shadow: 0 8px 20px rgba(147, 51, 234, 0.25);
+        }
+        .btn:active { transform: scale(0.95); }
+
+        .btn-start { background: var(--primary); color: white; }
+        .btn-stop { background: var(--text-dark); color: white; }
+        .btn-save { background: var(--accent-brown); color: white; margin-top: 20px; }
+
+        /* --- Form Section --- */
+        .input-group { margin-bottom: 25px; text-align: left; }
+        .label-title { 
+            font-weight: 800; 
+            margin-bottom: 10px; 
+            display: block; 
+            color: var(--primary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* 1. Effort Slider */
+        .slider-container {
+            display: flex; align-items: center; gap: 15px;
+            background: #F3F4F6; padding: 15px; border-radius: 20px;
+        }
+        input[type=range] {
+            flex: 1; -webkit-appearance: none; background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px; width: 24px;
+            border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 0 4px #E9D5FF;
+            margin-top: -10px;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 6px;
+            background: #D1D5DB; border-radius: 3px;
+        }
+
+        /* 2. Bristol Selector */
+        .bristol-preview {
+            font-size: 3rem; margin-bottom: 10px; text-align: center;
+            height: 60px;
+        }
+        .bristol-row {
+            display: flex; justify-content: space-between; gap: 5px;
+        }
+        .bristol-btn {
+            flex: 1; padding: 12px 0;
+            background: #F3F4F6;
+            border-radius: 12px;
+            font-weight: bold; color: var(--text-gray);
+            cursor: pointer; border: 2px solid transparent;
+        }
+        .bristol-btn.selected {
+            background: #EDE9FE;
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* 3. Color Dots */
+        .color-row { display: flex; justify-content: center; gap: 15px; }
+        .color-dot {
+            width: 35px; height: 35px; border-radius: 50%; cursor: pointer;
+            border: 3px solid white; box-shadow: 0 0 0 2px #E5E7EB;
+            transition: transform 0.2s;
+        }
+        .color-dot.selected { transform: scale(1.2); box-shadow: 0 0 0 2px var(--primary); }
+
+        /* --- History List --- */
+        .history-item {
+            display: flex; align-items: center;
+            background: white; padding: 15px;
+            border-radius: 20px; margin-bottom: 10px;
+        }
+        .icon-box {
+            width: 45px; height: 45px;
+            background: #F3E8FF; border-radius: 15px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; margin-right: 15px;
+        }
+        .score-display {
+            margin-left: auto;
+            font-weight: 800; font-size: 1.1rem;
+            color: var(--primary);
+        }
+
+        .hidden { display: none; }
+        .fade-in { animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+
+    </style>
+</head>
+<body>
+
+    <h1>Poop Tracker 💩</h1>
+
+    <div class="container">
+        
+        <div class="card" id="timerScreen">
+            <div class="mascot" id="mascot">💩</div>
+            <div class="timer-display" id="timer">00:00</div>
+            <button class="btn btn-start" id="mainBtn" onclick="toggleTimer()">START POOPING</button>
+        </div>
+
+        <div class="card hidden fade-in" id="logScreen">
+            <div class="input-group">
+                <label class="label-title">How was it?</label>
+                <div class="slider-container">
+                    <span style="font-size:1.5rem">😖</span> <input type="range" min="1" max="10" value="5" id="effortRange">
+                    <span style="font-size:1.5rem">😇</span> </div>
+            </div>
+
+            <div class="input-group">
+                <label class="label-title">Texture (Bristol)</label>
+                <div class="bristol-preview" id="bristolEmoji">🐍</div>
+                <div style="text-align:center; color:#6B7280; font-size:0.8rem; margin-bottom:10px;" id="bristolText">Perfect Snake</div>
+                
+                <div class="bristol-row">
+                    <div class="bristol-btn" onclick="setBristol(1)">1</div>
+                    <div class="bristol-btn" onclick="setBristol(2)">2</div>
+                    <div class="bristol-btn" onclick="setBristol(3)">3</div>
+                    <div class="bristol-btn selected" onclick="setBristol(4)">4</div>
+                    <div class="bristol-btn" onclick="setBristol(5)">5</div>
+                    <div class="bristol-btn" onclick="setBristol(6)">6</div>
+                    <div class="bristol-btn" onclick="setBristol(7)">7</div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label class="label-title">Color</label>
+                <div class="color-row">
+                    <div class="color-dot" style="background:#5D4037" onclick="setColor('Brown', this)"></div>
+                    <div class="color-dot" style="background:#8D6E63" onclick="setColor('Light', this)"></div>
+                    <div class="color-dot" style="background:#15803D" onclick="setColor('Green', this)"></div>
+                    <div class="color-dot" style="background:#B91C1C" onclick="setColor('Red', this)"></div>
+                    <div class="color-dot" style="background:#111827" onclick="setColor('Black', this)"></div>
+                </div>
+            </div>
+
+            <button class="btn btn-save" onclick="saveLog()">SAVE 💩</button>
+        </div>
+
+        <div style="padding: 0 10px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px; color:var(--text-dark); font-weight:bold;">
+                <span>Recent Logs</span>
+                <span style="opacity:0.5; cursor:pointer;" onclick="clearLogs()">Clear</span>
+            </div>
+            <div id="historyList"></div>
+        </div>
+
+    </div>
+
+    <script>
+        // State
+        let timerInterval;
+        let startTime;
+        let isRunning = false;
+        let currentBristol = 4;
+        let currentColor = 'Brown';
+
+        // Emoji Mappings for Bristol Scale
+        const bristolEmojis = {
+            1: "🌑", // Hard lumps
+            2: "🍇", // Lumpy sausage
+            3: "🌽", // Cracked
+            4: "🐍", // Snake (Perfect)
+            5: "🍦", // Soft blobs
+            6: "🥣", // Mushy
+            7: "🌊"  // Liquid
+        };
+        const bristolTexts = {
+            1: "Hard Rocks", 2: "Lumpy Log", 3: "Cracked Log",
+            4: "Perfect Snake", 5: "Soft Blobs", 6: "Mushy", 7: "Waterfall"
+        };
+
+        // Initialize
+        window.onload = renderHistory;
+
+        function toggleTimer() {
+            const btn = document.getElementById('mainBtn');
+            const mascot = document.getElementById('mascot');
+
+            if (!isRunning) {
+                // Start
+                isRunning = true;
+                startTime = Date.now();
+                btn.innerText = "FINISH";
+                btn.className = "btn btn-stop";
+                mascot.classList.add("breathing"); // Add animation
+                
+                timerInterval = setInterval(() => {
+                    const diff = Math.floor((Date.now() - startTime) / 1000);
+                    const m = Math.floor(diff / 60).toString().padStart(2, '0');
+                    const s = (diff % 60).toString().padStart(2, '0');
+                    document.getElementById('timer').innerText = `${m}:${s}`;
+                }, 1000);
+            } else {
+                // Stop
+                clearInterval(timerInterval);
+                isRunning = false;
+                mascot.classList.remove("breathing");
+                document.getElementById('timerScreen').classList.add('hidden');
+                document.getElementById('logScreen').classList.remove('hidden');
+            }
+        }
+
+        function setBristol(num) {
+            currentBristol = num;
+            // Update Visuals
+            document.getElementById('bristolEmoji').innerText = bristolEmojis[num];
+            document.getElementById('bristolText').innerText = bristolTexts[num];
+            
+            document.querySelectorAll('.bristol-btn').forEach(b => b.classList.remove('selected'));
+            event.target.classList.add('selected');
+        }
+
+        function setColor(name, el) {
+            currentColor = name;
+            document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+
+        function calculateScore(effort, type, color) {
+            let score = 0;
+            // 1. Texture (40pts)
+            if(type === 4) score = 40;
+            else if(type === 3 || type === 5) score = 30;
+            else score = 10;
+            
+            // 2. Effort (40pts)
+            score += (effort * 4);
+
+            // 3. Color (20pts)
+            if(color === 'Brown' || color === 'Light') score += 20;
+            else if(color === 'Green') score += 10;
+            else score += 0;
+
+            return Math.min(100, score);
+        }
+
+        function saveLog() {
+            const effort = parseInt(document.getElementById('effortRange').value);
+            const duration = document.getElementById('timer').innerText;
+            const score = calculateScore(effort, currentBristol, currentColor);
+            
+            const log = {
+                date: new Date().toLocaleString('en-US', {weekday:'short', hour:'numeric', minute:'numeric'}),
+                duration: duration,
+                score: score,
+                type: currentBristol,
+                emoji: bristolEmojis[currentBristol]
+            };
+
+            const logs = JSON.parse(localStorage.getItem('poopTrackerLogs')) || [];
+            logs.unshift(log);
+            localStorage.setItem('poopTrackerLogs', JSON.stringify(logs));
+
+            location.reload();
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('historyList');
+            const logs = JSON.parse(localStorage.getItem('poopTrackerLogs')) || [];
+
+            logs.forEach(log => {
+                let colorClass = '#10B981'; // Green
+                if(log.score < 80) colorClass = '#F59E0B'; // Yellow
+                if(log.score < 50) colorClass = '#EF4444'; // Red
+
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.innerHTML = `
+                    <div class="icon-box">🧻</div>
+                    <div>
+                        <div style="font-weight:bold; font-size:0.9rem;">${log.date}</div>
+                        <div style="color:#6B7280; font-size:0.8rem;">
+                            ${log.duration} • Type ${log.type} ${log.emoji}
+                        </div>
+                    </div>
+                    <div class="score-display" style="color:${colorClass}">
+                        ${log.score}
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function clearLogs() {
+            if(confirm("Flush history? 🚽")) {
+                localStorage.removeItem('poopTrackerLogs');
+                renderHistory();
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
