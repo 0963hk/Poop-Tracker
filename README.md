@@ -1,4 +1,4 @@
-# Poop Tracker 💩
+# 💩 Poop Tracker 
 
 > **A Harmonious & Private Bowel Health Logger**
 > <br> 一个优雅、私密且充满趣味的排便健康记录工具。
